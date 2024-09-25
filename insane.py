@@ -16,7 +16,7 @@ altura = info.current_h
 zombie_death = pygame.mixer.Sound('colisser.wav')
 dano = pygame.mixer.Sound('dano.wav')
 projetil_som = pygame.mixer.Sound('projetil.wav')
-menu_music = 'ZombiesMenu.wav'
+menu_music = 'InsaneMenu.wav'
 game_music = 'MusicB_1.wav'
 end_music = 'End.wav'
 atirador_sound = pygame.mixer.Sound('atirador.wav')
@@ -102,8 +102,8 @@ def atirar_inimigo():
     global projetil_atirador_ativo, projeteis_atirador, xHero, yHero, posAtiradorX, posAtiradorY
 
     # Verificar se o inimigo está alinhado para atirar
-    alinhado_em_x = abs(xHero - posAtiradorX) <= 60
-    alinhado_em_y = abs(yHero - posAtiradorY) <= 60
+    alinhado_em_x = abs(xHero - posAtiradorX) <= 200
+    alinhado_em_y = abs(yHero - posAtiradorY) <= 200
     
     # Atirar somente se estiver alinhado e não houver projétil ativo
     if (alinhado_em_x or alinhado_em_y) and not projetil_atirador_ativo:
@@ -130,7 +130,7 @@ def atualizar_projeteis():
         proj[1] += proj[3] * velProjetilAtirador  # Movimento em Y
 
         # Desenhar o projétil
-        projetilAtirador = pygame.draw.rect(janela, (255, 255, 0), (proj[0], proj[1], 10, 10))
+        projetilAtirador = pygame.draw.rect(janela, (random.randint(0,255),random.randint(0,255),random.randint(0,255)), (proj[0], proj[1], 40, 40))
 
         
         # Remover projétil se sair da tela
@@ -527,7 +527,6 @@ def loucura(janela,tempo_duracao =5):
         fps.tick(60)
         pygame.display.update()        
 
-
 mostrar_menu()
 pygame.mixer.music.load(game_music)
 pygame.mixer.music.play(-1)
@@ -539,7 +538,6 @@ while rodando:
     zombie = pygame.draw.rect(janela, (0, 255, 0), (xZombie, yZombie, 40, 60))
     zumbiNovo = pygame.draw.rect(janela,(255,100,0),(xZombieNovo,yZombieNovo,40,70))
     
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -610,7 +608,7 @@ while rodando:
     if projetil_ativo:
         projetil = pygame.draw.rect(janela, (255, 255, 0), (xProjetil, yProjetil, 30, 8))
         if projetil.colliderect(zombie):
-            pontos += 1
+            pontos += 0.5
             historico_pontos.append(pontos)
             zombie_death.play()
             xZombie = randint(10, 2180)
@@ -623,7 +621,7 @@ while rodando:
 
         #colisão de projétil
         if projetil.colliderect(zumbiNovo):
-            pontos += 1.5
+            pontos += 1
             historico_pontos.append(pontos)
             zombie_death.play()
             xZombieNovo = randint(10, 1900) 
@@ -695,10 +693,8 @@ while rodando:
       
     for pos in zumbisAzuis:
         zumbiAzul = pygame.draw.rect(janela, (0, 0, 255), (posicoesAleatoriasX, posicoesAleatoriasY, 40, 80))
-        atirador = pygame.draw.rect(janela,(255,0,0),(posAtiradorX,posAtiradorY,tamanhoxHero,tamanhoyHero)) 
-   
-                
-            
+        atirador = pygame.draw.rect(janela,(255,0,0),(posAtiradorX,posAtiradorY,90,90)) 
+         
         if hero.colliderect(zumbiAzul):
             dano.play()
             posicoesAleatoriasX = randint(10, 300)
@@ -717,10 +713,10 @@ while rodando:
             dano.play()
             posAtiradorX = randint(10, 1000)
             posAtiradorY = randint(10, 200)
-            pontos += 0.5
+            pontos += 2.5
 
         if projetil_ativo and projetil.colliderect(zumbiAzul):
-            pontos += 2
+            pontos += 2.0
             historico_pontos.append(pontos)
             zombie_death.play()
             posicoesAleatoriasX = randint(10,1080)
