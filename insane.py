@@ -59,6 +59,7 @@ projetil_atirador_ativo = False
 xProjetilAtirador = 0
 yProjetilAtirador = 0 
 
+
 def resetar_jogo():
     global pontos, xHero, yHero, projetil_ativo, xProjetil, yProjetil, zumbisAzuis, atiradores, projeteis_atirador, projetil_atirador_ativo,velHero
     # Resetar a pontuação
@@ -94,6 +95,70 @@ def desenhar_botao(texto, cor_botao, cor_texto, posicao, tamanho):
     janela.blit(texto_surface, texto_retangulo)
     
     return botao_rect
+
+def selecionar_dificuldade():
+    no_dificuldade = True
+    while no_dificuldade:
+        janela.fill((0, 0, 0))
+        #fonte = pygame.font.Font('fonte/Symtext.ttf', 40)
+
+        # Criar três botões para selecionar a dificuldade
+        botao_facil = desenhar_botao("Fácil", 
+                              (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
+                              (255, 255, 255),  # Cor do texto
+                              (largura // 2, altura // 2 - 60), 
+                              (400, 60))
+        botao_medio = desenhar_botao("Médio", 
+                              (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
+                              (255, 255, 255),  # Cor do texto
+                              (largura // 2, altura // 2), 
+                              (400, 60))
+        botao_dificil = desenhar_botao("Difícil", 
+                              (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
+                              (255, 255, 255),  # Cor do texto
+                              (largura // 2, altura // 2 + 60), 
+                              (400, 60))
+        pygame.display.update()
+        pygame.time.wait(100)
+
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if botao_facil.collidepoint(event.pos):
+                    click_sound.play()
+                    ajustar_dificuldade("facil")
+                    no_dificuldade = False
+                elif botao_medio.collidepoint(event.pos):
+                    click_sound.play()
+                    ajustar_dificuldade("medio")
+                    no_dificuldade = False
+                elif botao_dificil.collidepoint(event.pos):
+                    click_sound.play()
+                    ajustar_dificuldade("dificil")
+                    no_dificuldade = False
+
+def ajustar_dificuldade(nivel):
+    global velZombie, velHero, velAtirador, velProjetilAtirador, velocidade_projetil
+
+    if nivel == "facil":
+        velZombie = 2
+        velAtirador = 2
+    elif nivel == "medio":
+        velZombie = 4.6
+    elif nivel == "dificil":
+        velZombie = 6.5
+        velAtirador = 7
+        velProjetilAtirador = 10
+        velocidade_projetil = 60
+        velHero = 15
+
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(game_music)
+    pygame.mixer.music.play(-1)
+    resetar_jogo()    
 
 
 def fade(janela, largura, altura, fade_in=True):
@@ -164,7 +229,8 @@ def verificar_colisao_hero(projeteis_atirador, xHero, yHero, larguraHero, altura
             xZombieNovo = randint(0,100)
             yZombieNovo = randint(0,100) 
             xZombie = randint(0,100)
-            yZombie = randint(0,100)           
+            yZombie = randint(0,100) 
+            resetar_jogo()          
             break 
              
 def mover_atirador():
@@ -304,26 +370,26 @@ def mostrar_menu():
     pygame.mixer.music.stop()
     pygame.mixer.music.load(menu_music)
     pygame.mixer.music.play(-1)
-    global velZombie
-    global velHero
-    global velAtirador,velProjetilAtirador,velocidade_projetil
+
     no_menu = True
     while no_menu:
         janela.fill((0, 0, 0))
         fonte = pygame.font.Font('fonte/Symtext.ttf', 40)
-        fonte1 = pygame.font.Font('fonte/Symtext.ttf',100)
-        name = pygame.font.Font('fonte/Symtext.ttf',20)
-        marca = pygame.font.Font('fonte/Symtext.ttf',30)
-        marca_nome = marca.render("®",True,(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        apresentar_nome = fonte1.render("INSANE DREAMS",True,(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        mostre_name = name.render("Criad0 p0r DaviZer0",True,(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        texto_menu = fonte.render("1 Fácil, 2 Médio, 3 Difícil", True, (random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        texto_cofigs = fonte.render("Config. 4",True,(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
-        janela.blit(apresentar_nome, (largura/2 - apresentar_nome.get_width()//2, altura/2 - apresentar_nome.get_height()))
-        janela.blit(texto_cofigs,(largura-texto_cofigs.get_width(),altura-texto_cofigs.get_height()))
-        janela.blit(texto_menu, (largura//2 - texto_menu.get_width()//2, altura -300 - texto_menu.get_height()//2))
-        janela.blit(mostre_name, (largura//2 - mostre_name.get_width()//2, altura - 400))
-        janela.blit(marca_nome, (largura - texto_menu.get_width() +150 , altura//2.5))
+        fonte1 = pygame.font.Font('fonte/Symtext.ttf', 100)
+        name = pygame.font.Font('fonte/Symtext.ttf', 20)
+        marca = pygame.font.Font('fonte/Symtext.ttf', 30)
+        
+        apresentar_nome = fonte1.render("INSANE DREAMS", True, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+        mostre_name = name.render("Criado por DaviZer0", True, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+        marca_nome = marca.render("®", True, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)))
+
+        janela.blit(apresentar_nome, (largura // 2 - apresentar_nome.get_width() // 2, altura // 2 - apresentar_nome.get_height()))
+        janela.blit(mostre_name, (largura // 2 - mostre_name.get_width() // 2, altura - 400))
+        janela.blit(marca_nome, (largura - apresentar_nome.get_width() +410 , altura//2.5))
+
+        # Exibe a opção de selecionar dificuldade
+        botao_dificuldade = desenhar_botao("Jogar", (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (largura // 2, altura - 300), (200, 60))
+        
 
         for _ in range(13):  # quantidade de retângulos
             largura_ret = random.randint(10, 150)
@@ -334,52 +400,29 @@ def mostrar_menu():
             pygame.draw.rect(janela, cor, (x, y, largura_ret, altura_ret), 5)    
         pygame.display.update()
         pygame.time.wait(100)
+        pygame.display.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if botao_dificuldade.collidepoint(event.pos):
+                    click_sound.play()
+                    selecionar_dificuldade()
+                    no_menu = False
+                    return
+    
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
+                if event.key == pygame.K_5:
                     click_sound.play()
-                    velZombie = 2  # Velocidade dos zumbis para a dificuldade Fácil
-                    velAtirador = 2
-                    pygame.mixer.music.stop()  # Para a música do menu ao começar o jogo
-                    pygame.mixer.music.load(game_music)  # Carrega a música da gameplay
-                    pygame.mixer.music.play(-1)  # Reproduz a música da gameplay
-                    resetar_jogo()
+                    selecionar_dificuldade()
                     no_menu = False
-                    return
-                if event.key == pygame.K_2:
-                    click_sound.play()
-                    velZombie = 4.6  # Velocidade dos zumbis para a dificuldade Médio
-                    pygame.mixer.music.stop()  # Para a música do menu ao começar o jogo
-                    pygame.mixer.music.load(game_music)  # Carrega a música da gameplay
-                    pygame.mixer.music.play(-1)  # Reproduz a música da gameplay
-                    resetar_jogo()
-                    no_menu = False
-                    return
-                if event.key == pygame.K_3:
-                    click_sound.play()
-                    velZombie = 6.5  # Velocidade dos zumbis para a dificuldade Difícil
-                    velAtirador = 7
-                    velProjetilAtirador = 10
-                    velocidade_projetil = 60
-                    velHero = 15
-                    pygame.mixer.music.stop()  # Para a música do menu ao começar o jogo
-                    pygame.mixer.music.load(game_music)  # Carrega a música da gameplay
-                    pygame.mixer.music.play(-1)  # Reproduz a música da gameplay
-                    no_menu = False
-                    return
+                    return  
                 if event.key == pygame.K_ESCAPE:
-                    click_sound.play()
                     pygame.quit()
                     sys.exit()
-                if event.key == pygame.K_4:
-                    click_sound.play()
-                    regularSom(rodando)
-
-                       
+              
 
 def mostrar_pause():
     global pontos
@@ -412,12 +455,7 @@ def mostrar_pause():
         botao_menu = desenhar_botao("Voltar ao Menu", 
                                     (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
                                     (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
-                                    (largura // 2, altura // 2 + 320), (400, 60))                        
-
-        botao_reset = desenhar_botao("Resetar", 
-                                    (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
-                                    (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), 
-                                    (largura // 2, altura // 2 + 240), (400, 60))
+                                    (largura // 2, altura // 2 + 240), (400, 60))                        
 
 
         pygame.display.update()
@@ -441,11 +479,6 @@ def mostrar_pause():
                     click_sound.play()
                     regularSom(True)  # Função para ajustar o som
                     
-                if botao_reset.collidepoint(event.pos):
-                    click_sound.play()
-                    pygame.mixer.music.stop()
-                    resetar_jogo()  # Chama a função que reseta o jogo
-                    return
                 if botao_menu.collidepoint(event.pos):
                     click_sound.play()
                     pygame.mixer.music.stop()
@@ -464,11 +497,6 @@ def mostrar_pause():
                 if event.key == pygame.K_4:
                     click_sound.play()
                     regularSom(True)
-                if event.key == pygame.K_x:
-                    click_sound.play()
-                    pygame.mixer.music.stop()
-                    resetar_jogo()
-                    return
                 if event.key == pygame.K_m:  # Tecla para voltar ao menu
                     click_sound.play()
                     pygame.mixer.music.stop()
@@ -619,7 +647,6 @@ def mostrandoFim():
         pygame.display.update()
         pygame.time.delay(40)
       
-
 exibirAviso(janela,largura,altura)
 pygame.mixer.music.load(game_music)
 pygame.mixer.music.play(-1)
@@ -639,29 +666,17 @@ while rodando:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_1:
-                direcionador = 1
-                direcaoProjetilSom.play()
-            if event.key == pygame.K_2:
-                direcionador = 2
-                direcaoProjetilSom.play()
-            if event.key == pygame.K_3:
-                direcionador = 3
-                direcaoProjetilSom.play()
-            if event.key == pygame.K_4:
-                direcionador = 4
-                direcaoProjetilSom.play()
             if event.key == pygame.K_ESCAPE:
                 click_sound.play()
                 pause = True
                 mostrar_pause()
-                
+                    
                     
     keys = pygame.key.get_pressed()
     #movimentação do herói
     if keys[pygame.K_a]:
-        xHero -= velHero
-        if xHero < 0:  # Limite esquerdo da tela
+            xHero -= velHero
+    if xHero < 0:  # Limite esquerdo da tela
             xHero = 0
     if keys[pygame.K_d]:
         xHero += velHero
@@ -677,35 +692,51 @@ while rodando:
             yHero = altura - tamanhoyHero
 
     #projétil do jogador
-    if keys[pygame.K_p] and not projetil_ativo:
+    if keys[pygame.K_UP] and not projetil_ativo:  # Atira para cima
         projetil_som.play()
         projetil_ativo = True
-        xProjetil = xHero -2
-        yProjetil = yHero - 2
-        direcao_projetil = direcionador  # impedir o controle do projétil após disparo
+        xProjetil = xHero
+        yProjetil = yHero
+        direcao_projetil = 'cima'  # Impede controle após disparo
+    if keys[pygame.K_DOWN] and not projetil_ativo:  # Atira para baixo
+        projetil_som.play()
+        projetil_ativo = True
+        xProjetil = xHero
+        yProjetil = yHero
+        direcao_projetil = 'baixo'
+    if keys[pygame.K_LEFT] and not projetil_ativo:  # Atira para esquerda
+        projetil_som.play()
+        projetil_ativo = True
+        xProjetil = xHero
+        yProjetil = yHero
+        direcao_projetil = 'esquerda'
+    if keys[pygame.K_RIGHT] and not projetil_ativo:  # Atira para direita
+        projetil_som.play()
+        projetil_ativo = True
+        xProjetil = xHero
+        yProjetil = yHero
+        direcao_projetil = 'direita'
 
+# Atualizando a posição do projétil
     if projetil_ativo:
-        #esquerda
-        if direcao_projetil == 1:
+        if direcao_projetil == 'esquerda':
             xProjetil -= velocidade_projetil
             if xProjetil < 0:  # Se o projétil sair da tela
                 projetil_ativo = False
-        #direita
-        if direcao_projetil == 2:
+        elif direcao_projetil == 'direita':
             xProjetil += velocidade_projetil
             if xProjetil > largura:  # Se o projétil sair da tela
                 projetil_ativo = False
-        #cima        
-        if direcao_projetil == 3:
+        elif direcao_projetil == 'cima':
             yProjetil -= velocidade_projetil
             if yProjetil < 0:  # Se o projétil sair da tela
                 projetil_ativo = False
-        #baixo        
-        if direcao_projetil == 4:
+        elif direcao_projetil == 'baixo':
             yProjetil += velocidade_projetil
             if yProjetil > altura:  # Se o projétil sair da tela
                 projetil_ativo = False
 
+# Desenhando o projétil
     if projetil_ativo:
         projetil = pygame.draw.rect(janela, (255, 255, 0), (xProjetil, yProjetil, 20, 20))
         if projetil.colliderect(zombie):
@@ -777,7 +808,9 @@ while rodando:
         posAtiradorY = randint(10, 200)
         xZombieNovo = randint(10, 300)
         yZombieNovo = randint(10, 600)
+        
         pontuacao(pontos)
+        resetar_jogo()
 
     if hero.colliderect(zumbiNovo):
         dano.play()
@@ -789,7 +822,9 @@ while rodando:
         posAtiradorY = randint(10, 200)
         xZombieNovo = randint(10, 300)
         yZombieNovo = randint(10, 600)
+        
         pontuacao(pontos)
+        resetar_jogo()
       
     for pos in zumbisAzuis:
         zumbiAzul = pygame.draw.rect(janela, (0, 0, 255), (posicoesAleatoriasX, posicoesAleatoriasY, 40, 100))
@@ -806,11 +841,14 @@ while rodando:
             posAtiradorY = randint(10, 200)
             xZombieNovo = randint(10, 300)
             yZombieNovo = randint(10, 600)
-            pontuacao(pontos) 
+            
+            pontuacao(pontos)
+            resetar_jogo() 
         if hero.colliderect(atirador):
             dano.play()
             posAtiradorX = randint(10, 200)
             posAtiradorY = randint(10, 200)
+            resetar_jogo()
             pontuacao(pontos)  
         if projetil.colliderect(atirador):
             dano.play()
